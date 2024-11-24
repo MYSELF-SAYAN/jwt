@@ -5,7 +5,7 @@ const sign = ({ payload }) => {
         id: payload.id,
         name: payload.name,
     }
-    const token = jwt.sign(data, process.env.JWT_SECRET);
+    const token = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' });
     return token;
 }
 

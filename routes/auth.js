@@ -2,6 +2,8 @@ const router = require('express').Router();
 const pool = require('../db');
 const bcrypt = require('bcrypt');
 const sign = require('../utils/signJwt');
+const decode = require('../utils/decodeJwt')
+const jwtMiddleware = require('../utils/jwt')
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
   try {
@@ -42,6 +44,22 @@ router.post('/login', async (req, res) => {
       res.status(200).json({ message: "success", token: token });
     }
   } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
+router.get('/getUser', jwtMiddleware, async (req, res) => {
+  const reqHeader = req.headers["authorization"];
+
+  try {
+
+    // console.log("token   ", reqHeader.split(' ')[1]);
+    const token = reqHeader.split(' ')[1];
+    const data = decode({ token: token });
+    res.status(200).json({ data: data });
+  }
+  catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
