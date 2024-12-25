@@ -1,9 +1,13 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Load environment variables from .env file
+
 
 const jwtMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
+    // Check for a valid Authorization header
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ error: "Authorization token is missing or invalid." });
     }
@@ -13,10 +17,10 @@ const jwtMiddleware = async (req, res, next) => {
     try {
         // Verify and decode the token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
+
         // Attach decoded data (user info) to the request object
-        req.user = decoded;
-        
+        req.datas = decoded;
+
         // Pass control to the next middleware/route handler
         next();
     } catch (err) {
@@ -24,4 +28,4 @@ const jwtMiddleware = async (req, res, next) => {
     }
 };
 
-module.exports = jwtMiddleware;
+export default jwtMiddleware;
