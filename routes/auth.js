@@ -1,6 +1,6 @@
 import express from 'express';
-import pool from '../db.js'; // Use ES6 imports
-import bcrypt from 'bcrypt';
+import pool from '../config/db.js'; // Use ES6 imports
+import argon2 from 'argon2';
 import sign from '../utils/signJwt.js';
 import jwtMiddleware from '../utils/jwt.js';
 import crypto from 'crypto';
@@ -14,7 +14,10 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ error: 'All fields are required: username, email, and password' });
   }
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password with Argon2
+    const hashedPassword = await argon2.hash(password, {
+      type: argon2.argon2id, // Use Argon2id for a balance of security and performance
+    });
 
     // Generate a random API key
     const apiKey = crypto.randomBytes(32).toString('hex');
@@ -41,7 +44,7 @@ router.post('/signup', async (req, res) => {
 
     res.status(200).json({
       message: 'User created successfully',
-      api_key: result.rows[0].api_key, // Return the generated API key
+      api_key: result.rows[0].api_key,
     });
   } catch (error) {
     console.error('Failed to create user', error);
@@ -59,7 +62,8 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result.rows[0];
-    const validPassword = await bcrypt.compare(password, user.password);
+    // Verify the password using Argon2
+    const validPassword = await argon2.verify(user.password, password);
     if (!validPassword) {
       return res.status(401).json({ message: "Invalid password" });
     }
@@ -72,6 +76,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 // Get User Route
 router.get('/getUser', jwtMiddleware, async (req, res) => {

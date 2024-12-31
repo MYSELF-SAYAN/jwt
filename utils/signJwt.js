@@ -11,7 +11,7 @@ const sign = ({ payload }) => {
         email:payload.email
     };
 
-    const token = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '30d' });
     return token;
 };
 
