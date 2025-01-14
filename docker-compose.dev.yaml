@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dev.dockerfile 
+    ports:
+      - "5000:5000"
+    # volumes:
+    #   - .:/app # Mount the current directory to /app
+    #   - /app/node_modules # Prevent overwriting the container's node_modules
+    command: nodemon --watch . --ext js,json --exec "node index.js"
+    depends_on:
+      - redis-stack
+    develop:
+      watch:
+        - path: ./package.json
+          action: rebuild
+        - path: ./package-lock.json
+          action: rebuild
+        - path: ./
+          target: /app
+          action: sync
+  redis-stack:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+      - "8001:8001"

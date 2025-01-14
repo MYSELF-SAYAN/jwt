@@ -60,7 +60,7 @@ router.get("/",jwtMiddleware,async(req,res)=>{
         const getData=`select * from "contacts" where userid=$1`
         const data= await pool.query(getData,[id])
         await redis.set('contacts',JSON.stringify(data.rows))
-        await redis.expire('contacts',20)
+        await redis.expire('contacts',1800)
         logger.info("Fetching data from database")
         res.status(200).json({ message: "All datas ", data: data.rows })
     }catch(e){

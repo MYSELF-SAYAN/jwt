@@ -14,15 +14,15 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ error: 'All fields are required: username, email, and password' });
   }
   try {
-    // Hash the password with Argon2
+   
     const hashedPassword = await argon2.hash(password, {
-      type: argon2.argon2id, // Use Argon2id for a balance of security and performance
+      type: argon2.argon2id, 
     });
 
-    // Generate a random API key
+    
     const apiKey = crypto.randomBytes(32).toString('hex');
 
-    // Create table if it doesn't exist
+    
     const createTableQuery = `
         CREATE TABLE IF NOT EXISTS "user" (
           id SERIAL PRIMARY KEY,
@@ -35,7 +35,7 @@ router.post('/signup', async (req, res) => {
         )`;
     await pool.query(createTableQuery);
 
-    // Insert new user into the database
+    
     const creationQuery = `
       INSERT INTO "user" (name, email, password, api_key) 
       VALUES ($1, $2, $3, $4) RETURNING api_key`;
@@ -52,7 +52,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Login Route
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -62,7 +62,7 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result.rows[0];
-    // Verify the password using Argon2
+    
     const validPassword = await argon2.verify(user.password, password);
     if (!validPassword) {
       return res.status(401).json({ message: "Invalid password" });
@@ -78,7 +78,7 @@ router.post('/login', async (req, res) => {
 });
 
 
-// Get User Route
+
 router.get('/getUser', jwtMiddleware, async (req, res) => {
   try {
     const user = req.datas;

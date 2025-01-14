@@ -2,7 +2,7 @@
 import express from 'express';
 import logger from "./config/logger.js";
 import morgan from "morgan";
-import authRoute from './routes/auth.js'; 
+import authRoute from './routes/auth.js';
 import contactsRoute from './routes/contacts.js';
 const app = express();
 
