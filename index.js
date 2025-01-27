@@ -23,6 +23,7 @@ app.use(
     },
   })
 );
+//check
 app.use("/api/auth", authRoute);
 app.use('/api/contacts', contactsRoute);
 app.listen(5000, () => {
